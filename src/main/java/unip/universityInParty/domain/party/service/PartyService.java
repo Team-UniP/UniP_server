@@ -49,10 +49,13 @@ public class PartyService {
         return partyRepository.findPartyDetailById(id);
     }
 
+    /*
     // 메인 페이지에 표시할 파티 리스트를 조회합니다.
     public List<PartyResponseDto> getPartyMainPage(PartyType partyType){
         return partyRepository.getMainPartyPage(partyType);
     }
+
+    */
 
     public List<PartyResponseDto> getPartyPage(PartyType partyType, long lastId, int size) {
         return partyRepository.getPartyPage(partyType, lastId, size);

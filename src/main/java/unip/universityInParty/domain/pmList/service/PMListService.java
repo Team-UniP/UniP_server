@@ -42,9 +42,11 @@ public class PMListService {
     public void createJoinParty(PartyRole partyRole, Long memberId, Long partyId) {
         Party party = partyService.findByIdPessimisticLock(partyId);
         Member member = memberService.findById(memberId);
+
         if (pmListRepository.existsByPartyAndMember(party, member)) {
             throw new CustomException(PartyErrorCode.ALREADY_JOINED);
         }
+
         party.joinParty(); // 파티 인원 수 증가
         PMList pmList = PMList.builder()
             .party(party)
@@ -64,6 +66,7 @@ public class PMListService {
         if (!pmListRepository.existsByPartyAndMember(party, member)) {
             throw new CustomException(PartyErrorCode.MEMBER_NOT_IN_PARTY);
         }
+
         party.leaveParty(); // 파티 인원 수 감소
         pmListRepository.deleteByPartyAndMember(party, member); // 멤버 삭제
     }

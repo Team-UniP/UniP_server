@@ -26,6 +26,7 @@ public class PartyRepositoryCustomImpl implements PartyRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    /*
     @Override
     public List<PartyResponseDto> getMainPartyPage(PartyType partyType) {
         BooleanBuilder conditions = createMainPartyConditions(partyType);
@@ -47,6 +48,7 @@ public class PartyRepositoryCustomImpl implements PartyRepositoryCustom {
             .where(conditions)
             .fetch();
     }
+     */
 
     @Override
     public PartyDetailsResponseDto findPartyDetailById(Long id) {
@@ -95,6 +97,7 @@ public class PartyRepositoryCustomImpl implements PartyRepositoryCustom {
 
     @Override
     public List<PartyResponseDto> getPartyPage(PartyType partyType, Long lastId, int size) {
+        BooleanBuilder conditions = createMainPartyConditions(partyType, lastId);
         return queryFactory
             .select(Projections.constructor(PartyResponseDto.class,
                 party.id,
@@ -109,23 +112,21 @@ public class PartyRepositoryCustomImpl implements PartyRepositoryCustom {
             ))
             .from(party)
             .join(party.member, member)
-            .where(
-                party.partyType.eq(partyType),
-                lastId != null ? party.id.gt(lastId) : party.id.gt(0)
-            )
+            .where(conditions)
+            .orderBy(party.id.desc()) //커서 페이징은 안정적이고 예측가능한 페이징을 위해 정렬을 추가
             .limit(size)
             .fetch();
     }
 
-
-    private BooleanBuilder createMainPartyConditions(PartyType partyType) {
+    private BooleanBuilder createMainPartyConditions(PartyType partyType,  Long lastId) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(party.endTime.goe(LocalDateTime.now())); // 현재 시간 이후의 파티만 조회
         builder.and(party.isClosed.isFalse()); // 종료되지 않은 파티만 조회
 
         if (partyType != null) {
             builder.and(party.partyType.eq(partyType)); // 파티 타입 조건 추가
         }
+
+        builder.and(lastId != null ? party.id.gt(lastId) : party.id.gt(0)); // lastId 조건 추가
 
         return builder;
     }

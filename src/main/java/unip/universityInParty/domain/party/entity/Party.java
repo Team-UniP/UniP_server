@@ -20,7 +20,7 @@ import unip.universityInParty.domain.party.exception.PartyErrorCode;
 @Builder
 @Table(
     indexes = {
-        @Index(name = "idx_party_category_status", columnList = " isClosed, partyType")
+        @Index(name = "idx_party_cursor", columnList = " isClosed, partyType, id")
     }
 )
 public class Party {
