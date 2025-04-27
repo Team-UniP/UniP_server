@@ -1,0 +1,9 @@
+version: '3'
+services:
+  app:
+    image: quddaz/myapp:latest
+    ports:
+      - "80:8080"
+    environment:
+      - TZ=Asia/Seoul
+    restart: always
